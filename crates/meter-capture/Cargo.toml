@@ -1,0 +1,13 @@
+[package]
+name = "meter-capture"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+meter-core.workspace = true
+anyhow.workspace = true
+pcap.workspace = true
+netstat2.workspace = true
+sysinfo.workspace = true

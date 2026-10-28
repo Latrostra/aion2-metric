@@ -1,0 +1,38 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/meter-proto",
+    "crates/meter-core",
+    "crates/meter-capture",
+    "crates/meter-agent",
+    "crates/meter-web",
+    "crates/meter-overlay",
+]
+default-members = [
+    "crates/meter-proto",
+    "crates/meter-core",
+    "crates/meter-capture",
+    "crates/meter-agent",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.90"
+license = "MIT"
+
+[workspace.dependencies]
+meter-proto = { path = "crates/meter-proto" }
+meter-core = { path = "crates/meter-core" }
+meter-capture = { path = "crates/meter-capture" }
+meter-agent = { path = "crates/meter-agent" }
+anyhow = "1"
+lz4_flex = "0.14"
+pcap = { git = "https://github.com/rust-pcap/pcap", rev = "f3476f62e45740e84595754386612f4e354d152a" }
+netstat2 = "0.11"
+sysinfo = { version = "0.39", default-features = false, features = ["system"] }
+clap = { version = "4.6", features = ["derive"] }
+ctrlc = "3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = "3"

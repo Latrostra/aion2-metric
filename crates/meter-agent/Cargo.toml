@@ -1,0 +1,21 @@
+[package]
+name = "meter-agent"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "a2m"
+path = "src/main.rs"
+
+[dependencies]
+meter-proto.workspace = true
+meter-core.workspace = true
+meter-capture.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+ctrlc.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+ureq.workspace = true

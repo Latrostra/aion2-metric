@@ -1,0 +1,17 @@
+[package]
+name = "meter-web"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+meter-proto.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+leptos = { version = "0.8", features = ["csr"] }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["Location", "Window", "Storage", "KeyboardEvent", "MouseEvent", "WheelEvent", "DomRect", "ResizeObserver", "ResizeObserverEntry", "CssStyleDeclaration", "HtmlElement"] }
+console_error_panic_hook = "0.1"
