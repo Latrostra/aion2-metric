@@ -8,7 +8,7 @@ use wasm_bindgen::JsCast;
 
 use crate::dps::{DpsRows, EncounterSummary};
 use crate::i18n::tr;
-use crate::kinah::KinahPanel;
+use crate::income::IncomePanel;
 use crate::limits::LimitsPanel;
 use crate::meter;
 use crate::overlay::{
@@ -115,7 +115,7 @@ fn Header(
             {own.map(|panel| view! { <span class="title">{panel.label()}</span> })}
             <span class="spacer"></span>
             <button class="icon restart" title=tr("Reset", "Resetuj") on:click=move |_| match current.get_untracked() {
-                Some(Panel::Kinah) => tauri::reset_kinah(),
+                Some(Panel::Stats) => tauri::reset_income(),
                 _ => meter::reset_meter(),
             }>
                 "↻"
@@ -253,7 +253,7 @@ pub fn App() -> impl IntoView {
                         view! { <p class="idle">{tr("All panels are detached.", "Wszystkie panele są odpięte.")}</p> }
                             .into_any()
                     }
-                    (Some(Panel::Pets | Panel::Limits | Panel::Kinah), _) => ().into_any(),
+                    (Some(Panel::Pets | Panel::Limits | Panel::Stats), _) => ().into_any(),
                     (Some(Panel::Dps), None) => {
                         view! {
                             <p class="idle">
@@ -299,9 +299,9 @@ pub fn App() -> impl IntoView {
                             snapshot.get().map(|snapshot| snapshot.limits).unwrap_or_default()
                         }) />
                     </Show>
-                    <Show when=move || current.get() == Some(Panel::Kinah)>
-                        <KinahPanel kinah=Signal::derive(move || {
-                            snapshot.get().map(|snapshot| snapshot.kinah).unwrap_or_default()
+                    <Show when=move || current.get() == Some(Panel::Stats)>
+                        <IncomePanel income=Signal::derive(move || {
+                            snapshot.get().map(|snapshot| snapshot.income).unwrap_or_default()
                         }) />
                     </Show>
                 </div>

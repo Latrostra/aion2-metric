@@ -1,12 +1,12 @@
 use leptos::prelude::*;
-use meter_proto::KinahView;
+use meter_proto::IncomeView;
 
 use crate::i18n::tr;
 use crate::limits::group_digits;
 
 const UNKNOWN_VALUE: &str = "?";
 
-fn kinah_entry(label: &'static str, value: String) -> impl IntoView {
+fn income_entry(label: &'static str, value: String) -> impl IntoView {
     view! {
         <div class="pet">
             <span class="pet-name">{label}</span>
@@ -15,10 +15,16 @@ fn kinah_entry(label: &'static str, value: String) -> impl IntoView {
     }
 }
 
+fn rate_text(per_hour: Option<u64>) -> String {
+    per_hour
+        .map(group_digits)
+        .unwrap_or_else(|| UNKNOWN_VALUE.to_string())
+}
+
 #[component]
-pub fn KinahPanel(kinah: Signal<KinahView>) -> impl IntoView {
+pub fn IncomePanel(income: Signal<IncomeView>) -> impl IntoView {
     let waiting_banner = move || {
-        (!kinah.get().counting).then(|| {
+        (!income.get().kina.counting).then(|| {
             view! {
                 <p class="pets-warn">
                     {tr(
@@ -33,14 +39,11 @@ pub fn KinahPanel(kinah: Signal<KinahView>) -> impl IntoView {
         <div class="pets">
             {waiting_banner}
             {move || {
-                let kinah = kinah.get();
-                let per_hour = kinah
-                    .per_hour
-                    .map(group_digits)
-                    .unwrap_or_else(|| UNKNOWN_VALUE.to_string());
+                let income = income.get();
                 view! {
-                    {kinah_entry(tr("Earned kina", "Zarobiona kina"), group_digits(kinah.earned))}
-                    {kinah_entry(tr("Kina/h", "Kina/h"), per_hour)}
+                    {income_entry(tr("Earned kina", "Zarobiona kina"), group_digits(income.kina.earned))}
+                    {income_entry(tr("Kina/h", "Kina/h"), rate_text(income.kina.per_hour))}
+                    {income_entry(tr("Abyss/h", "Abyss/h"), rate_text(income.abyss.per_hour))}
                 }
             }}
         </div>

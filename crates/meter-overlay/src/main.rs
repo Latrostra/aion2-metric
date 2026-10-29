@@ -59,7 +59,7 @@ fn main() {
             commands::is_locked,
             commands::get_snapshot,
             commands::reset_meter,
-            commands::reset_kinah,
+            commands::reset_income,
             commands::set_idle_secs,
             commands::set_recent_secs,
             commands::set_pinned_pets

@@ -11,14 +11,20 @@ pub struct Snapshot {
     #[serde(default)]
     pub limits: LimitsView,
     #[serde(default)]
-    pub kinah: KinahView,
+    pub income: IncomeView,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct KinahView {
+pub struct GainView {
     pub counting: bool,
     pub earned: u64,
     pub per_hour: Option<u64>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct IncomeView {
+    pub kina: GainView,
+    pub abyss: GainView,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]

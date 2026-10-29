@@ -20,18 +20,18 @@ pub enum Panel {
     Dps,
     Pets,
     Limits,
-    Kinah,
+    Stats,
 }
 
 impl Panel {
-    pub const ALL: [Panel; 4] = [Panel::Dps, Panel::Pets, Panel::Limits, Panel::Kinah];
+    pub const ALL: [Panel; 4] = [Panel::Dps, Panel::Pets, Panel::Limits, Panel::Stats];
 
     pub fn key(self) -> &'static str {
         match self {
             Panel::Dps => "dps",
             Panel::Pets => "pets",
             Panel::Limits => "limits",
-            Panel::Kinah => "kinah",
+            Panel::Stats => "stats",
         }
     }
 
@@ -40,7 +40,7 @@ impl Panel {
             Panel::Dps => "DPS",
             Panel::Pets => tr("Pets", "Pety"),
             Panel::Limits => tr("Limits", "Limity"),
-            Panel::Kinah => tr("Kina", "Kina"),
+            Panel::Stats => tr("Stats", "Statystyki"),
         }
     }
 

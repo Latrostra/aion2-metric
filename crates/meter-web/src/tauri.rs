@@ -146,8 +146,8 @@ pub fn reset_meter() {
     call_and_forget("reset_meter", JsValue::UNDEFINED);
 }
 
-pub fn reset_kinah() {
-    call_and_forget("reset_kinah", JsValue::UNDEFINED);
+pub fn reset_income() {
+    call_and_forget("reset_income", JsValue::UNDEFINED);
 }
 
 pub fn set_idle_secs(secs: u32) {

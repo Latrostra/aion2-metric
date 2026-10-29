@@ -64,8 +64,8 @@ pub fn reset_meter(meter: State<MeterEngine>) {
 }
 
 #[tauri::command]
-pub fn reset_kinah(meter: State<MeterEngine>) {
-    meter.0.state().reset_kinah();
+pub fn reset_income(meter: State<MeterEngine>) {
+    meter.0.state().reset_income();
 }
 
 #[tauri::command]

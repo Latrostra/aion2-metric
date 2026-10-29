@@ -10,7 +10,7 @@ use meter_core::parser::{self, GameEvent};
 use meter_core::pipeline::GamePacket;
 use meter_proto::{LimitView, LimitsView, Snapshot, Status};
 
-use crate::kinah::KinahTracker;
+use crate::income::Income;
 use crate::pet_names;
 use crate::pets::Pets;
 use crate::sources;
@@ -25,7 +25,7 @@ pub struct AppState {
     status: Status,
     pets: Pets,
     limits: LimitsView,
-    kinah: KinahTracker,
+    income: Income,
     changed: bool,
 }
 
@@ -36,7 +36,7 @@ impl Default for AppState {
             status: Status::default(),
             pets: Pets::default(),
             limits: LimitsView::default(),
-            kinah: KinahTracker::default(),
+            income: Income::default(),
             changed: true,
         }
     }
@@ -50,7 +50,7 @@ impl AppState {
             self.status.heartbeats += 1;
         }
         self.meter.tick(ts_ms);
-        self.kinah.tick(ts_ms);
+        self.income.tick(ts_ms);
         for event in events {
             match event {
                 GameEvent::Hit(_) => {
@@ -61,7 +61,7 @@ impl AppState {
                     self.pets.on_collection(levels, souls)
                 }
                 GameEvent::PetSouls(picked) => self.pets.on_souls(ts_ms, picked),
-                GameEvent::KinahBalance(balance) => self.kinah.on_balance(ts_ms, *balance),
+                GameEvent::KinahBalance(balance) => self.income.kina.on_balance(ts_ms, *balance),
                 GameEvent::DailyKinah(current) => {
                     self.limits.kinah = Some(LimitView {
                         current: *current,
@@ -75,6 +75,7 @@ impl AppState {
                     })
                 }
                 GameEvent::AbyssPoints { current, limit } => {
+                    self.income.abyss.on_balance(ts_ms, *current);
                     self.limits.abyss = Some(LimitView {
                         current: *current,
                         limit: *limit,
@@ -112,8 +113,8 @@ impl AppState {
         self.changed = true;
     }
 
-    pub fn reset_kinah(&mut self) {
-        self.kinah.reset();
+    pub fn reset_income(&mut self) {
+        self.income.reset();
         self.changed = true;
     }
 
@@ -135,7 +136,7 @@ impl AppState {
             session: self.meter.session_view(),
             pets: self.pets.view(),
             limits: self.limits,
-            kinah: self.kinah.view(),
+            income: self.income.view(),
         }
     }
 }
@@ -313,13 +314,24 @@ mod tests {
     }
 
     #[test]
-    fn kinah_reaches_the_snapshot_and_resets() {
+    fn income_reaches_the_snapshot_and_resets() {
         let mut state = AppState::default();
-        let balances = [1_000, 1_415].map(GameEvent::KinahBalance);
-        state.apply(&packet(0, opcodes::INVENTORY_ITEM), &balances);
-        assert_eq!(state.snapshot().kinah.earned, 415);
-        state.reset_kinah();
-        assert_eq!(state.snapshot().kinah.earned, 0);
+        let abyss = |current| GameEvent::AbyssPoints {
+            current,
+            limit: 2_500_000,
+        };
+        let events = [
+            GameEvent::KinahBalance(1_000),
+            GameEvent::KinahBalance(1_415),
+            abyss(39_666),
+            abyss(39_774),
+        ];
+        state.apply(&packet(0, opcodes::INVENTORY_ITEM), &events);
+        let income = state.snapshot().income;
+        assert_eq!((income.kina.earned, income.abyss.earned), (415, 108));
+        state.reset_income();
+        let income = state.snapshot().income;
+        assert_eq!((income.kina.earned, income.abyss.earned), (0, 0));
     }
 
     #[test]

@@ -41,8 +41,8 @@ injects anything, never sends anything to the game and opens no network ports.
 ### The window
 
 - **Move**: drag the window anywhere. **Resize**: drag its edges.
-- **Header**: the open padlock locks the window, ↻ resets the open tab (fight on DPS, earned kina on Kina), ⚙ opens settings.
-- **Tabs**: **DPS**, **Pets**, **Limits** and **Kina**. Click a tab to switch.
+- **Header**: the open padlock locks the window, ↻ resets the open tab (fight on DPS, earned kina and rates on Stats), ⚙ opens settings.
+- **Tabs**: **DPS**, **Pets**, **Limits** and **Stats**. Click a tab to switch.
 - **Lock**: click the padlock or press **Ctrl+Shift+L**. A locked window stays in place,
   hides its buttons and lets clicks through to the game. Press the shortcut again to unlock.
 - **Tray icon**: lock / unlock, show / hide, quit.
@@ -92,11 +92,12 @@ Shows how much you already have today and the limit:
 Values update as you gain kina, abyss points or gather. If a value shows **?**, gain some of it
 or relog your character while the overlay is running.
 
-### Kina tab
+### Stats tab
 
 - **Earned kina**: all kina you gained since the overlay started or since **↻**
   (mobs everywhere, Abyss included). Spending does not lower it. Selling and trading also count.
-- **Kina/h**: how much you would earn in an hour at the same rate. Shown after one minute.
+- **Kina/h** and **Abyss/h**: how much you would earn in an hour at the same rate. Shown
+  after one minute.
 
 Counting starts after the first kina change, or right away if you log in with the overlay
 running.

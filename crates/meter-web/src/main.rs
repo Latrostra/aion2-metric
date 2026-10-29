@@ -2,7 +2,7 @@ mod app;
 mod controls;
 mod dps;
 mod i18n;
-mod kinah;
+mod income;
 mod limits;
 mod meter;
 mod overlay;

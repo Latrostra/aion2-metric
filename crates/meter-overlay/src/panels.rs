@@ -13,7 +13,7 @@ use crate::dock::{self, Layout, PanelState, Rect};
 use crate::lock;
 
 pub const MAIN_LABEL: &str = "main";
-pub const PANELS: [&str; 4] = ["dps", "pets", "limits", "kinah"];
+pub const PANELS: [&str; 4] = ["dps", "pets", "limits", "stats"];
 const PANEL_LABEL_PREFIX: &str = "panel-";
 const PANEL_MIN_WIDTH: f64 = 160.0;
 const PANEL_MIN_HEIGHT: f64 = 80.0;
