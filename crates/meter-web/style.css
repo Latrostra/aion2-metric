@@ -45,7 +45,8 @@ body {
 .overlay.locked .sheet,
 .overlay.locked .rz,
 .overlay.locked:not(.panel) .meter header,
-.overlay.locked .icon {
+.overlay.locked .icon,
+.overlay.locked .panel-tab:not(.on) {
   display: none;
 }
 

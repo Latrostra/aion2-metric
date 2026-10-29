@@ -44,7 +44,7 @@ injects anything, never sends anything to the game and opens no network ports.
 - **Header**: the open padlock locks the window, ↻ resets the open tab (fight on DPS, earned kina and rates on Stats), ⚙ opens settings.
 - **Tabs**: **DPS**, **Pets**, **Limits** and **Stats**. Click a tab to switch.
 - **Lock**: click the padlock or press **Ctrl+Shift+L**. A locked window stays in place,
-  hides its buttons and lets clicks through to the game. Press the shortcut again to unlock.
+  hides its buttons and the other tabs, and lets clicks through to the game. Press the shortcut again to unlock.
 - **Tray icon**: lock / unlock, show / hide, quit.
 - The overlay hides itself while the game is not the active window and comes back when you
   return to the game. You can turn this off in settings.
