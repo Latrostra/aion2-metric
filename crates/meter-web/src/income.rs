@@ -29,21 +29,8 @@ fn duration_text(total_secs: u64) -> String {
 
 #[component]
 pub fn IncomePanel(income: Signal<IncomeView>) -> impl IntoView {
-    let waiting_banner = move || {
-        (!income.get().kina.counting).then(|| {
-            view! {
-                <p class="pets-warn">
-                    {tr(
-                        "Counting starts after the first kina change or a relog.",
-                        "Liczenie zacznie się po pierwszej zmianie kiny albo przelogowaniu.",
-                    )}
-                </p>
-            }
-        })
-    };
     view! {
         <div class="pets">
-            {waiting_banner}
             {move || {
                 let income = income.get();
                 view! {

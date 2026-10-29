@@ -27,7 +27,6 @@ impl GainTracker {
 
     fn view(&self, elapsed_ms: Option<i64>) -> GainView {
         GainView {
-            counting: self.balance.is_some(),
             earned: self.earned,
             per_hour: elapsed_ms.map_or(0, |elapsed_ms| self.per_hour(elapsed_ms)),
         }
@@ -136,7 +135,6 @@ mod tests {
             (view.kina.earned, view.kina.per_hour, view.elapsed_secs),
             (0, 0, 0)
         );
-        assert!(view.kina.counting);
         income.on_kina_balance(6 * MINUTE_MS, 2_400);
         income.tick(66 * MINUTE_MS);
         let view = income.view();

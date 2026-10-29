@@ -16,7 +16,6 @@ pub struct Snapshot {
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GainView {
-    pub counting: bool,
     pub earned: u64,
     pub per_hour: u64,
 }

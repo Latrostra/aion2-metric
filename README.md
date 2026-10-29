@@ -101,9 +101,6 @@ or relog your character while the overlay is running.
   does not lower it. Selling and trading also count.
 - **Kina/h** and **Abyss/h**: how much you would earn in an hour at the same rate.
 
-Counting starts after the first kina change, or right away if you log in with the overlay
-running.
-
 ### Separate windows and docking
 
 - Drag a tab out of the main window to open it as a separate window.
