@@ -3,7 +3,6 @@ use meter_proto::KinahView;
 
 use crate::i18n::tr;
 use crate::limits::group_digits;
-use crate::tauri;
 
 const UNKNOWN_VALUE: &str = "?";
 
@@ -44,9 +43,6 @@ pub fn KinahPanel(kinah: Signal<KinahView>) -> impl IntoView {
                     {kinah_entry(tr("Kina/h", "Kina/h"), per_hour)}
                 }
             }}
-            <button class="kinah-reset" on:click=move |_| tauri::reset_kinah()>
-                {move || tr("Reset", "Resetuj")}
-            </button>
         </div>
     }
 }

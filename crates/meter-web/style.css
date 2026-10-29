@@ -226,22 +226,6 @@ body {
   border-radius: 4px;
 }
 
-.kinah-reset {
-  align-self: flex-start;
-  background: none;
-  border: 1px solid var(--muted);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 11px;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.kinah-reset:hover {
-  color: inherit;
-  border-color: currentColor;
-}
-
 .pet-pin {
   background: none;
   border: none;

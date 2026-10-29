@@ -105,6 +105,7 @@ fn LockControls(lock_shortcut: RwSignal<String>) -> impl IntoView {
 #[component]
 fn Header(
     own: Option<Panel>,
+    current: Memo<Option<Panel>>,
     lock_shortcut: RwSignal<String>,
     show_settings: RwSignal<bool>,
 ) -> impl IntoView {
@@ -113,7 +114,10 @@ fn Header(
             {own.is_none().then(|| view! { <LockControls lock_shortcut=lock_shortcut /> })}
             {own.map(|panel| view! { <span class="title">{panel.label()}</span> })}
             <span class="spacer"></span>
-            <button class="icon restart" title=tr("Reset", "Resetuj") on:click=move |_| meter::reset_meter()>
+            <button class="icon restart" title=tr("Reset", "Resetuj") on:click=move |_| match current.get_untracked() {
+                Some(Panel::Kinah) => tauri::reset_kinah(),
+                _ => meter::reset_meter(),
+            }>
                 "↻"
             </button>
             {move || match own {
@@ -239,7 +243,7 @@ pub fn App() -> impl IntoView {
     view! {
         <main class="meter" data-tauri-drag-region="true" style=style_vars on:wheel=on_wheel>
             <ResizeHandles />
-            <Header own=own lock_shortcut=lock_shortcut show_settings=show_settings />
+            <Header own=own current=current lock_shortcut=lock_shortcut show_settings=show_settings />
             <Show when=move || !tabs.get().is_empty()>
                 <TabBar tabs=tabs current=current active=active />
             </Show>
