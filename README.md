@@ -13,7 +13,7 @@ injects anything, never sends anything to the game and opens no network ports.
 |---|---|
 | **Live DPS and pet tabs**<br>![DPS and pets tabs](docs/media/tabs.gif) | **Lock**: buttons and other tabs hide, clicks go through to the game<br>![Lock](docs/media/lock.gif) |
 | **Resize**: rows and text scale with the window<br>![Resize](docs/media/resize.gif) | **Settings**<br>![Settings](docs/media/settings.gif) |
-| **Daily limits**: kina, abyss points, gathering<br>![Limits](docs/media/limits.gif) | **Stats**: earned kina, kina/h, abyss/h, ↻ resets<br>![Stats](docs/media/stats.gif) |
+| **Daily limits**: kina, abyss points, gathering<br>![Limits](docs/media/limits.gif) | **Stats**: earned kina, kina/h, abyss/h, ↻ resets<br>![Stats](docs/media/stats-tab.gif) |
 
 **Move and resize anywhere over the game**
 
