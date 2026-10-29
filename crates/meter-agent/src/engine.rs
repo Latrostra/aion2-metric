@@ -61,7 +61,7 @@ impl AppState {
                     self.pets.on_collection(levels, souls)
                 }
                 GameEvent::PetSouls(picked) => self.pets.on_souls(ts_ms, picked),
-                GameEvent::KinahBalance(balance) => self.income.kina.on_balance(ts_ms, *balance),
+                GameEvent::KinahBalance(balance) => self.income.on_kina_balance(ts_ms, *balance),
                 GameEvent::DailyKinah(current) => {
                     self.limits.kinah = Some(LimitView {
                         current: *current,
@@ -75,7 +75,7 @@ impl AppState {
                     })
                 }
                 GameEvent::AbyssPoints { current, limit } => {
-                    self.income.abyss.on_balance(ts_ms, *current);
+                    self.income.on_abyss_points(ts_ms, *current);
                     self.limits.abyss = Some(LimitView {
                         current: *current,
                         limit: *limit,

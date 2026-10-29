@@ -1,50 +1,44 @@
 use meter_proto::{GainView, IncomeView};
 
+const MS_PER_SECOND: i64 = 1_000;
 const MS_PER_HOUR: i64 = 3_600_000;
-const MIN_RATE_WINDOW_MS: i64 = 60_000;
 
 #[derive(Debug, Default)]
 pub struct GainTracker {
     balance: Option<u64>,
     earned: u64,
-    counting_since_ms: Option<i64>,
 }
 
 impl GainTracker {
-    pub fn on_balance(&mut self, ts_ms: i64, balance: u64) {
-        match self.balance {
-            Some(previous) => self.earned += balance.saturating_sub(previous),
-            None => self.counting_since_ms = Some(ts_ms),
-        }
+    fn on_balance(&mut self, balance: u64) -> u64 {
+        let gained = self
+            .balance
+            .map_or(0, |previous| balance.saturating_sub(previous));
+        self.earned += gained;
         self.balance = Some(balance);
+        gained
     }
 
-    pub fn reset(&mut self, now_ms: i64) {
-        self.earned = 0;
-        self.counting_since_ms = self.balance.map(|_| now_ms);
+    fn per_hour(&self, elapsed_ms: i64) -> u64 {
+        let elapsed_ms = elapsed_ms.max(MS_PER_SECOND);
+        let per_hour = u128::from(self.earned) * MS_PER_HOUR as u128 / elapsed_ms as u128;
+        u64::try_from(per_hour).unwrap_or(u64::MAX)
     }
 
-    fn per_hour(&self, now_ms: i64) -> Option<u64> {
-        let elapsed_ms = now_ms - self.counting_since_ms?;
-        (elapsed_ms >= MIN_RATE_WINDOW_MS).then(|| {
-            let per_hour = u128::from(self.earned) * MS_PER_HOUR as u128 / elapsed_ms as u128;
-            u64::try_from(per_hour).unwrap_or(u64::MAX)
-        })
-    }
-
-    pub fn view(&self, now_ms: i64) -> GainView {
+    fn view(&self, elapsed_ms: Option<i64>) -> GainView {
         GainView {
             counting: self.balance.is_some(),
             earned: self.earned,
-            per_hour: self.per_hour(now_ms),
+            per_hour: elapsed_ms.map_or(0, |elapsed_ms| self.per_hour(elapsed_ms)),
         }
     }
 }
 
 #[derive(Debug, Default)]
 pub struct Income {
-    pub kina: GainTracker,
-    pub abyss: GainTracker,
+    kina: GainTracker,
+    abyss: GainTracker,
+    first_gain_ms: Option<i64>,
     now_ms: i64,
 }
 
@@ -53,15 +47,36 @@ impl Income {
         self.now_ms = self.now_ms.max(ts_ms);
     }
 
+    pub fn on_kina_balance(&mut self, ts_ms: i64, balance: u64) {
+        let gained = self.kina.on_balance(balance);
+        self.start_clock_on_gain(ts_ms, gained);
+    }
+
+    pub fn on_abyss_points(&mut self, ts_ms: i64, points: u64) {
+        let gained = self.abyss.on_balance(points);
+        self.start_clock_on_gain(ts_ms, gained);
+    }
+
+    fn start_clock_on_gain(&mut self, ts_ms: i64, gained: u64) {
+        if gained > 0 && self.first_gain_ms.is_none() {
+            self.first_gain_ms = Some(ts_ms);
+        }
+    }
+
     pub fn reset(&mut self) {
-        self.kina.reset(self.now_ms);
-        self.abyss.reset(self.now_ms);
+        self.kina.earned = 0;
+        self.abyss.earned = 0;
+        self.first_gain_ms = None;
     }
 
     pub fn view(&self) -> IncomeView {
+        let elapsed_ms = self
+            .first_gain_ms
+            .map(|first_gain_ms| (self.now_ms - first_gain_ms).max(0));
         IncomeView {
-            kina: self.kina.view(self.now_ms),
-            abyss: self.abyss.view(self.now_ms),
+            elapsed_secs: elapsed_ms.map_or(0, |elapsed_ms| (elapsed_ms / MS_PER_SECOND) as u64),
+            kina: self.kina.view(elapsed_ms),
+            abyss: self.abyss.view(elapsed_ms),
         }
     }
 }
@@ -74,54 +89,57 @@ mod tests {
 
     #[test]
     fn earned_counts_only_gains() {
-        let mut tracker = GainTracker::default();
-        for balance in [1_000, 1_415, 1_200, 1_700] {
-            tracker.on_balance(0, balance);
-        }
-        assert_eq!(tracker.view(0).earned, 415 + 500);
-    }
-
-    #[test]
-    fn rate_is_projected_to_an_hour_after_a_minute() {
-        let mut tracker = GainTracker::default();
-        tracker.on_balance(0, 1_000);
-        tracker.on_balance(MINUTE_MS / 2, 1_500);
-        assert_eq!(tracker.view(MINUTE_MS / 2).per_hour, None);
-        assert_eq!(tracker.view(10 * MINUTE_MS).per_hour, Some(3_000));
-    }
-
-    #[test]
-    fn reset_starts_counting_from_now() {
         let mut income = Income::default();
-        income.kina.on_balance(0, 1_000);
-        income.kina.on_balance(MINUTE_MS, 2_000);
-        income.abyss.on_balance(0, 39_000);
-        income.abyss.on_balance(MINUTE_MS, 39_100);
+        for balance in [1_000, 1_415, 1_200, 1_700] {
+            income.on_kina_balance(0, balance);
+        }
+        assert_eq!(income.view().kina.earned, 415 + 500);
+    }
+
+    #[test]
+    fn clock_starts_at_the_first_gain() {
+        let mut income = Income::default();
+        income.on_kina_balance(0, 1_000);
+        income.tick(5 * MINUTE_MS);
+        assert_eq!(income.view().elapsed_secs, 0);
+        assert_eq!(income.view().kina.per_hour, 0);
+        income.on_kina_balance(5 * MINUTE_MS, 1_500);
+        income.tick(5 * MINUTE_MS);
+        assert_eq!(income.view().kina.per_hour, 1_800_000);
+        income.tick(15 * MINUTE_MS);
+        let view = income.view();
+        assert_eq!(view.elapsed_secs, 600);
+        assert_eq!(view.kina.per_hour, 3_000);
+    }
+
+    #[test]
+    fn abyss_gain_also_starts_the_clock() {
+        let mut income = Income::default();
+        income.on_abyss_points(0, 39_000);
+        income.on_abyss_points(MINUTE_MS, 39_100);
+        income.on_kina_balance(MINUTE_MS, 5_000);
+        income.tick(61 * MINUTE_MS);
+        let view = income.view();
+        assert_eq!(view.elapsed_secs, 3_600);
+        assert_eq!((view.abyss.per_hour, view.kina.per_hour), (100, 0));
+    }
+
+    #[test]
+    fn reset_waits_for_the_next_gain() {
+        let mut income = Income::default();
+        income.on_kina_balance(0, 1_000);
+        income.on_kina_balance(MINUTE_MS, 2_000);
         income.tick(5 * MINUTE_MS);
         income.reset();
         let view = income.view();
         assert_eq!(
-            (view.kina.earned, view.kina.per_hour, view.kina.counting),
-            (0, None, true)
+            (view.kina.earned, view.kina.per_hour, view.elapsed_secs),
+            (0, 0, 0)
         );
-        assert_eq!(view.abyss.earned, 0);
-        income.kina.on_balance(6 * MINUTE_MS, 2_400);
-        income.abyss.on_balance(6 * MINUTE_MS, 39_160);
-        income.tick(65 * MINUTE_MS);
+        assert!(view.kina.counting);
+        income.on_kina_balance(6 * MINUTE_MS, 2_400);
+        income.tick(66 * MINUTE_MS);
         let view = income.view();
-        assert_eq!(view.kina.per_hour, Some(400));
-        assert_eq!(view.abyss.per_hour, Some(60));
-    }
-
-    #[test]
-    fn nothing_is_counted_before_the_first_balance() {
-        let mut income = Income::default();
-        income.tick(10 * MINUTE_MS);
-        income.reset();
-        let view = income.view().kina;
-        assert_eq!(
-            (view.earned, view.per_hour, view.counting),
-            (0, None, false)
-        );
+        assert_eq!((view.kina.per_hour, view.elapsed_secs), (400, 3_600));
     }
 }

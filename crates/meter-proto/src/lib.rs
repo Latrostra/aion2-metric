@@ -18,11 +18,12 @@ pub struct Snapshot {
 pub struct GainView {
     pub counting: bool,
     pub earned: u64,
-    pub per_hour: Option<u64>,
+    pub per_hour: u64,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IncomeView {
+    pub elapsed_secs: u64,
     pub kina: GainView,
     pub abyss: GainView,
 }

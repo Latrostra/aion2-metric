@@ -95,10 +95,11 @@ or relog your character while the overlay is running.
 
 ### Stats tab
 
-- **Earned kina**: all kina you gained since the overlay started or since **↻**
-  (mobs everywhere, Abyss included). Spending does not lower it. Selling and trading also count.
-- **Kina/h** and **Abyss/h**: how much you would earn in an hour at the same rate. Shown
-  after one minute.
+- **Time**: how long the stats cover. It starts with the first kina or abyss points you gain
+  after the overlay starts or after **↻**.
+- **Earned kina**: all kina you gained in that time (mobs everywhere, Abyss included). Spending
+  does not lower it. Selling and trading also count.
+- **Kina/h** and **Abyss/h**: how much you would earn in an hour at the same rate.
 
 Counting starts after the first kina change, or right away if you log in with the overlay
 running.
